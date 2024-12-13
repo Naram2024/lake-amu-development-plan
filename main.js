@@ -30,39 +30,39 @@ let baseMaps = {
 // styles
 let proposed_landUseStyles = (feature) => {
   let styles = {
-    Commercial: { color: "#232323", fillColor: "#59a8e4", fillOpacity: 0.5 },
-    Educational: { color: "#232323", fillColor: "#9822dc", fillOpacity: 0.5 },
-    Industrial: { color: "#232323", fillColor: "#77e5d4", fillOpacity: 0.5 },
-    MixedUse: { color: "#232323", fillColor: "#35c857", fillOpacity: 0.5 },
-    Recreational: { color: "#232323", fillColor: "#83c95a", fillOpacity: 0.5 },
-    Residential: { color: "#232323", fillColor: "#e8863b", fillOpacity: 0.5 },
+    Commercial: { color: "#232323", fillColor: "#f1130c", fillOpacity: 0.5 },
+    Educational: { color: "#232323", fillColor: "#ff7e09", fillOpacity: 0.5 },
+    Industrial: { color: "#232323", fillColor: "#110ef7", fillOpacity: 0.5 },
+    MixedUse: { color: "#232323", fillColor: "#e16817", fillOpacity: 0.5 },
+    Recreational: { color: "#232323", fillColor: "#11f009", fillOpacity: 0.5 },
+    Residential: { color: "#232323", fillColor: "#c7450c", fillOpacity: 0.5 },
     Transportation: {
       color: "#232323",
-      fillColor: "#d4566b",
+      fillColor: "#b3b2a8",
       fillOpacity: 0.5,
     },
-    PublicUtility: { color: "#232323", fillColor: "#ce5eb4", fillOpacity: 0.5 },
-    PublicPurpose: { color: "#232323", fillColor: "#d43fc5", fillOpacity: 0.5 },
+    PublicUtility: { color: "#232323", fillColor: "#4cc2d0", fillOpacity: 0.5 },
+    PublicPurpose: { color: "#232323", fillColor: "#fdfb27", fillOpacity: 0.5 },
     Default: { color: "#232323", fillColor: "#f0f0f0", fillOpacity: 0.3 },
   };
   return styles[feature.properties.LAND_USE] || styles.Default;
 };
 let existing_landUse2023Styles = (feature) => {
   let styles = {
-    Commercial: { color: "#232323", fillColor: "#59a8e4", fillOpacity: 0.5 },
+    Commercial: { color: "#232323", fillColor: "#f1130c", fillOpacity: 0.5 },
     Underdeveloped: {
       color: "#232323",
-      fillColor: "#35c857",
+      fillColor: "#666560",
       fillOpacity: 0.5,
     },
-    Agricultural: { color: "#232323", fillColor: "#35c857", fillOpacity: 0.5 },
-    Residential: { color: "#232323", fillColor: "#e8863b", fillOpacity: 0.5 },
+    Agricultural: { color: "#232323", fillColor: "#4e780e", fillOpacity: 0.5 },
+    Residential: { color: "#232323", fillColor: "#c7450c", fillOpacity: 0.5 },
     Transport: {
       color: "#232323",
-      fillColor: "#d4566b",
+      fillColor: "#b3b2a8",
       fillOpacity: 0.5,
     },
-    PublicPurpose: { color: "#232323", fillColor: "#d43fc5", fillOpacity: 0.5 },
+    PublicPurpose: { color: "#232323", fillColor: "#fdfb27", fillOpacity: 0.5 },
     Default: { color: "#232323", fillColor: "#f0f0f0", fillOpacity: 0.3 },
   };
   return styles[feature.properties.land_use] || styles.Default;
@@ -95,6 +95,13 @@ Promise.all([
     }).addTo(map);
     landUse2023 = L.geoJSON(data[1], {
       style: existing_landUse2023Styles,
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(`
+          <div>
+          <b>Land Use:</b>  ${feature.properties.land_use} <br />
+          </div>
+        `);
+      },
     });
     land_parcels = L.geoJSON(data[2]);
     proposed_landUse = L.geoJSON(data[3], {
@@ -139,17 +146,19 @@ let legend = L.control({
 legend.onAdd = function () {
   let div = L.DomUtil.create("div", "info legend");
   const categories = {
-    Commercial: "#59a8e4",
-    Educational: "#9822dc",
-    Industrial: "#77e5d4",
-    MixedUse: "#35c857",
-    Recreational: "#83c95a",
-    Residential: "#e8863b",
-    Transportation: "#d4566b",
-    "Public Utility": "#ce5eb4",
-    "Public Purpose": "#d43fc5",
+    Commercial: "#f1130c",
+    Educational: "#ff7e09",
+    Industrial: "#110ef7",
+    MixedUse: "#e16817",
+    Recreational: "#11f009",
+    Residential: "#c7450c",
+    Transportation: "#b3b2a8",
+    "Public Utility": "#4cc2d0",
+    "Public Purpose": "#fdfb27",
+    Underdeveloped: "#666560",
+    Agricultural: "#4e780e",
   };
-  div.innerHTML = "<h4>Land Use Categories</h4>";
+  div.innerHTML = "<h4>Land Use Classes</h4>";
   for (let [category, color] of Object.entries(categories)) {
     div.innerHTML += `
       <i style="background:${color}; border:1px solid #232323;"></i> ${category}<br>
